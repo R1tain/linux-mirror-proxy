@@ -2,19 +2,19 @@
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yourusername/linux-mirror-proxy)
 
-基於 Cloudflare Workers 的 Linux 發行版鏡像反向代理服務，具備自動架構識別功能。這個代理服務能夠智能檢測系統架構（x86/x64、ARM、RISC-V 等），並自動選擇正確的源，加速軟件包下載和系統更新。
+基于 Cloudflare Workers 的 Linux 发行版镜像反向代理服务，具备自动架构识别功能。这个代理服务能够智能检测系统架构（x86/x64、ARM、RISC-V 等），并自动选择正确的源，加速软件包下载和系统更新。
 
-## 🌟 主要特點
+## 🌟 主要特点
 
-- **智能架構識別**：自動檢測並適配不同的系統架構（x86/x64、ARM64、RISC-V）
-- **廣泛支持**：覆蓋多種主流 Linux 發行版，包括 Ubuntu、Debian、CentOS、Fedora 等
-- **全球加速**：基於 Cloudflare 全球網絡，減少下載延遲和提高穩定性
-- **簡單配置**：一鍵部署，使用方便的配置腳本快速設置
-- **無需伺服器**：利用 Cloudflare Workers 的無伺服器架構，零維護成本
+- **智能架构识别**：自动检测并适配不同的系统架构（x86/x64、ARM64、RISC-V）
+- **广泛支持**：覆盖多种主流 Linux 发行版，包括 Ubuntu、Debian、CentOS、Fedora 等
+- **全球加速**：基于 Cloudflare 全球网络，减少下载延迟和提高稳定性
+- **简单配置**：一键部署，使用方便的配置脚本快速设置
+- **无需服务器**：利用 Cloudflare Workers 的无服务器架构，零维护成本
 
-## 📋 支持的 Linux 發行版
+## 📋 支持的 Linux 发行版
 
-| 發行版 | 支持架構 | 智能識別 |
+| 发行版 | 支持架构 | 智能识别 |
 |--------|----------|----------|
 | Ubuntu | x86/x64, ARM64 | ✅ |
 | Debian | x86/x64, ARM, RISC-V | ✅ |
@@ -28,21 +28,21 @@
 
 ## 🚀 快速部署
 
-### 方法一：點擊部署按鈕
+### 方法一：点击部署按钮
 
-點擊上方的"Deploy to Cloudflare Workers"按鈕，登錄到您的 Cloudflare 帳戶，然後按照指示完成部署。
+点击上方的"Deploy to Cloudflare Workers"按钮，登录到您的 Cloudflare 账户，然后按照指示完成部署。
 
-### 方法二：手動部署
+### 方法二：手动部署
 
-1. 在 Cloudflare Dashboard 中創建新的 Worker
-2. 複製本倉庫中的 `worker.js` 代碼
-3. 粘貼到 Worker 編輯器中並部署
+1. 在 Cloudflare Dashboard 中创建新的 Worker
+2. 复制本仓库中的 `worker.js` 代码
+3. 粘贴到 Worker 编辑器中并部署
 
 ## 💻 使用方法
 
-部署完成後，您會獲得一個 `*.workers.dev` 域名。訪問這個網址可以看到配置指南頁面，其中包含了不同 Linux 發行版的一鍵配置腳本。
+部署完成后，您会获得一个 `*.workers.dev` 域名。访问这个网址可以看到配置指南页面，其中包含了不同 Linux 发行版的一键配置脚本。
 
-### 範例（Ubuntu）：
+### 范例（Ubuntu）：
 
 ```bash
 sudo bash -c 'TIMESTAMP=$(date +%Y%m%d_%H%M%S) && cp /etc/apt/sources.list /etc/apt/sources.list.bak.$TIMESTAMP && if grep -q "ubuntu-ports" /etc/apt/sources.list; then
@@ -50,47 +50,52 @@ sudo bash -c 'TIMESTAMP=$(date +%Y%m%d_%H%M%S) && cp /etc/apt/sources.list /etc/
   sed -i "s|http://ports.ubuntu.com/ubuntu-ports/|https://your-worker.workers.dev/ubuntu-arm/|g" /etc/apt/sources.list
   sed -i "s|http://ports.ubuntu.com/ubuntu-ports|https://your-worker.workers.dev/ubuntu-arm|g" /etc/apt/sources.list
 else
-  # 標準 x86/x64 版本的 Ubuntu
+  # 标准 x86/x64 版本的 Ubuntu
   sed -i "s|http://archive.ubuntu.com/ubuntu/|https://your-worker.workers.dev/ubuntu/|g" /etc/apt/sources.list
   sed -i "s|http://security.ubuntu.com/ubuntu/|https://your-worker.workers.dev/ubuntu/|g" /etc/apt/sources.list
-fi && apt update && echo "已備份原配置至 /etc/apt/sources.list.bak.$TIMESTAMP 並更新完成！"'
+fi && apt update && echo "已备份原配置至 /etc/apt/sources.list.bak.$TIMESTAMP 并更新完成！"'
+
+```
 
 ## 🛠️ 工作原理
 
-1. 當用戶使用代理鏡像網址訪問時，Cloudflare Worker 會攔截請求
-2. Worker 分析請求路徑，智能判斷目標發行版和架構類型
-3. 根據判斷結果，Worker 修改請求並將其轉發到對應的官方鏡像源
-4. 回應被返回給用戶，同時保持內容完整性
+1. 当用户使用代理镜像网址访问时，Cloudflare Worker 会拦截请求
+2. Worker 分析请求路径，智能判断目标发行版和架构类型
+3. 根据判断结果，Worker 修改请求并将其转发到对应的官方镜像源
+4. 响应被返回给用户，同时保持内容完整性
 
-代理路徑示例：
+代理路径示例：
 - `/ubuntu/` → `http://archive.ubuntu.com/ubuntu/` (x86/x64)
 - `/ubuntu-arm/` → `http://ports.ubuntu.com/ubuntu-ports/` (ARM64)
 - `/debian/` → `http://deb.debian.org/debian` (x86/x64)
 - `/debian-ports/` → `http://deb.debian.org/debian-ports` (ARM/RISC-V)
 
-## 📊 性能與限制
 
-- Cloudflare Workers 免費版每日有 100,000 次請求限制
-- 單次請求最大處理時間為 10ms（付費版 50ms）
-- 每個請求最大傳輸大小為 128MB
+## 📊 性能与限制
 
-對於大多數日常使用和小型服務器場景，這些限制已經足夠。
+- Cloudflare Workers 免费版每日有 100,000 次请求限制
+- 单次请求最大处理时间为 10ms（付费版 50ms）
+- 每个请求最大传输大小为 128MB
 
-## 🔧 自定義與擴展
+对于大多数日常使用和小型服务器场景，这些限制已经足够。
 
-您可以通過修改 `worker.js` 文件來支持更多 Linux 發行版或優化現有功能：
+## 🔧 自定义与扩展
+
+您可以通过修改 `worker.js` 文件来支持更多 Linux 发行版或优化现有功能：
 
 ```javascript
-// 添加新的發行版支持
+// 添加新的发行版支持
 const newRepositories = {
   '/newdistro': 'http://mirror.newdistro.org/packages',
 };
+```
+## 🤝 贡献
+欢迎提交 Pull Requests 来改进代码或添加新功能！如果您有任何问题或建议，请创建 Issue。
 
-## 🤝 貢獻
-歡迎提交 Pull Requests 來改進代碼或添加新功能！如果您有任何問題或建議，請創建 Issue。
+## 📜 许可证
+本项目采用 MIT 许可证 - 详细信息请查看 LICENSE 文件。
 
-## 📜 許可證
-本項目採用 MIT 許可證 - 詳細信息請查看 LICENSE 文件。
+## ⚠️ 免责声明
+此代理服务仅用于学习和测试目的，不保证永久可用性和完整性。使用前请务必备份您的系统配置。
 
-## ⚠️ 免責聲明
-此代理服務僅用於學習和測試目的，不保證永久可用性和完整性。使用前請務必備份您的系統配置。
+
