@@ -464,8 +464,8 @@ fi && apt update && echo "已备份原配置至 /etc/apt/sources.list.bak.$TIMES
       <h4>报告问题或获取帮助</h4>
       <p>如果您在使用过程中遇到任何问题，或者发现某些特定架构下的发行版无法正常工作，请通过以下方式联系我们：</p>
       <ul>
-        <li>在 GitHub 上提交 Issue: <a href="https://github.com/yourusername/linux-mirror-proxy/issues">github.com/yourusername/linux-mirror-proxy</a></li>
-        <li>通过电子邮件联系: support@example.com</li>
+        <li>在 GitHub 上提交 Issue: <a href="https://github.com/R1tain/linux-mirror-proxy/issues">github.com/R1tain/linux-mirror-proxy</a></li>
+        <li>通过电子邮件联系: supporting.lizard.yxkg@mask.me</li>
       </ul>
       <p class="mb-0">我们将持续改进此服务，以支持更多的架构和发行版。</p>
     </div>
